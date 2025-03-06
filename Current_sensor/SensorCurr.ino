@@ -5,7 +5,7 @@ float sensibility = 0.066; //sensibility in V/A
 float current_value, irms, power;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {
