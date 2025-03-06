@@ -1,0 +1,53 @@
+#include <Arduino.h>
+#include <ArduinoJson.h>
+#include <WiFi.h>
+#include <WebSocketsClient.h>
+// WebSocket Server URL
+const char* websocket_server = lol //lo que sea el link
+
+// WebSocket Event Handler
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+    switch(type) {
+        case WStype_CONNECTED:
+            Serial.println("Connected to WebSocket server!");
+            break;
+        case WStype_TEXT:
+            Serial.printf("Received message: %s\n", payload);
+            break;
+        case WStype_DISCONNECTED:
+            Serial.println("Disconnected from WebSocket server!");
+            break;
+    }
+}
+
+// Send Telemetry 
+void sendTelemetryData() {
+    // Create JSON document
+    StaticJsonDocument<200> jsonDoc;
+    jsonDoc["temperature"] = random(20, 40); // Example telemetry data
+    jsonDoc["voltage"] = random(300, 500) / 10.0; 
+    jsonDoc["status"] = "OK";
+
+    // Convert JSON to string
+    String jsonString;
+    serializeJson(jsonDoc, jsonString);
+
+    // Send via WebSocket
+    webSocket.sendTXT(jsonString);
+    Serial.println("Sent: " + jsonString);
+}
+
+void setup() {
+    Serial.begin(115200);
+    setupWiFi();
+    
+    // Setup WebSocket client
+    webSocket.begin(websocket_server, 80, "/");
+    webSocket.onEvent(webSocketEvent);
+}
+
+void loop() {
+    webSocket.loop();  // Connection alive
+
+    sendTelemetryData();  // Send telemetry 
+    delay(5000);  // Send every 5 seconds
