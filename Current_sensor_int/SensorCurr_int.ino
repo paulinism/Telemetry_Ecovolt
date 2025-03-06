@@ -9,7 +9,7 @@ float current_value, irms, power;
 hw_timer_t *timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
-volatile void has_expired = false;
+volatile bool has_expired = false;
 
 void setup() {
   Serial.begin(115200);
