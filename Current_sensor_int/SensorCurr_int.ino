@@ -27,7 +27,6 @@ void loop() {
     printData();
     has_expired = false; 
   }
-  //delay(500);
 }
 
 void setup_timer(){
