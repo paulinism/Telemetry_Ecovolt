@@ -29,7 +29,7 @@ void loop() {
 void setup_timer(){
   timer = timerBegin(80); // Timer 0, divisor de reloj 80
   timerAttachInterrupt(timer, &timerInterrupcion); // Interruption function
-  timerWrite(timer, 500000); // Interruption every 1/2 second
+  timerAlarm(timer, 500000, true, 0); // Interruption every 1/2 second
 }
 
 void get_data(){
