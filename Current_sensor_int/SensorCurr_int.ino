@@ -11,6 +11,10 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
 volatile bool has_expired = false;
 
+void IRAM_ATTR timerInterrupcion() {
+  has_expired = true;
+}
+
 void setup() {
   Serial.begin(115200);
   setup_timer();
@@ -27,7 +31,7 @@ void loop() {
 }
 
 void setup_timer(){
-  timer = timerBegin(80); // Timer 0, divisor de reloj 80
+  timer = timerBegin(1000000);
   timerAttachInterrupt(timer, &timerInterrupcion); // Interruption function
   timerAlarm(timer, 500000, true, 0); // Interruption every 1/2 second
 }
@@ -51,8 +55,4 @@ void printData(){
   Serial.println(irms, 4);
   Serial.print("Power (W): ");
   Serial.println(power, 4);
-}
-
-void IRAM_ATTR timerInterrupcion() {
-  has_expired = true;
 }
