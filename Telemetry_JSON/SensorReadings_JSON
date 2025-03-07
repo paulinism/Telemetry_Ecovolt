@@ -4,12 +4,10 @@
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
 #include <Arduino_JSON.h>
-#include <Adafruit_BME280.h>
-#include <Adafruit_Sensor.h>
 
-// Replace with your network credentials
-const char* ssid = "REPLACE_WITH_YOUR_SSID";
-const char* password = "REPLACE_WITH_YOUR_PASSWORD";
+// WiFi
+const char* ssid = "moto_edge_50_pro_JD";  // Enter your Wi-Fi name
+const char* password = "Canada031106";     // Enter Wi-Fi password
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -23,17 +21,6 @@ JSONVar readings;
 // Timer variables
 unsigned long lastTime = 0;
 unsigned long timerDelay = 30000;
-
-// Create a sensor object
-Adafruit_BME280 bme;
-
-// Init BME280
-void initBME(){
-  if (!bme.begin(0x76)) {
-    Serial.println("Could not find a valid BME280 sensor, check wiring!");
-    while (1);
-  }
-}
 
 // Get Sensor Readings and return JSON object
 String getSensorReadings(){
@@ -107,7 +94,6 @@ void initWebSocket() {
 
 void setup() {
   Serial.begin(115200);
-  initBME();
   initWiFi();
   initLittleFS();
   initWebSocket();
