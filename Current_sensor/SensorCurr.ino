@@ -1,6 +1,7 @@
 #include <Wire.h>
 
-int sensor_PIN = 0;
+int sensorC_PIN = 0;
+int sensorV_PIN = 0;
 float sensibility = 0.066; //sensibility in V/A
 float current_value, irms, power;
 
@@ -14,16 +15,17 @@ void loop() {
   delay(500);
 }
 
-void get_data(){
-  current_value = get_current(); 
-  irms = current_value*0.707;
-  power = irms*220.0; // P=IV watts, check value
+float fmap(float x, float in_min, float in_max, float out_min, float out_max){
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-float get_current(){
-  float sensorRead = analogRead(sensor_PIN) * (5.0 / 1023.0);
-  float current = (sensorRead-2.5)/sensibility;
-  return current;
+void get_data(){
+  sensorCRead = analogRead(sensorC_PIN) * (5.0 / 1023.0);
+  current = (sensorRead-2.5)/sensibility;
+  //irms = current*0.707;
+  sensorVRead = analogRead(sensorV_PIN);
+  voltage = value = fmap(sensorValue, 0, 1023, 0.0, 10.0);
+  power = current*voltage; // P=IV watts
 }
 
 void printData(){
