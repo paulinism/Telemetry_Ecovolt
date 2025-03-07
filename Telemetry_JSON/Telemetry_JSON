@@ -2,6 +2,11 @@
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <WebSocketsClient.h>
+
+// WiFi
+const char* ssid = "moto_edge_50_pro_JD";  // Enter your Wi-Fi name
+const char* password = "Canada031106";     // Enter Wi-Fi password
+
 // WebSocket Server URL
 const char* websocket_server = lol //lo que sea el link
 
