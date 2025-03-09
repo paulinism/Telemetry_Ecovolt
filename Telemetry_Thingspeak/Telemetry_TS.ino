@@ -62,7 +62,7 @@ const uint8_t MPU = 0x68;
 unsigned long delay_cal = 3000;
 
 float rawaccX = 0, rawaccY = 0, rawaccZ = 0, rawgyroX = 0, rawgyroY = 0, rawgyroZ = 0;
-float tempC, gyroX, gyroY, gyroZ, accX, accY, accZ, calgyroX, calgyroY, calgyroZ, calaccX, calaccY, calaccZ;
+float gyroX, gyroY, gyroZ, accX, accY, accZ, calgyroX, calgyroY, calgyroZ, calaccX, calaccY, calaccZ;
 float lat, lon, speed, alt, sat;
 
 int Led_WIFI = 0;
