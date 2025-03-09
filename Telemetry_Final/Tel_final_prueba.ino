@@ -1,17 +1,27 @@
 #include <Wire.h>
 #include <WiFi.h>
 #include <TinyGPS++.h>
-#include <Arduino.h>
 #include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include "LittleFS.h"
+#include <WebSocketsClient.h>
 #include <Arduino_JSON.h>
+#include <ESPAsyncWebServer.h>
 
 // WiFi
 const char* ssid = "moto_edge_50_pro_JD";  // Enter your Wi-Fi name
 const char* password = "Canada031106";     // Enter Wi-Fi password
 
 WiFiClient esp32Client;
+
+//WebSocketsClient webSocket;
+
+// Create AsyncWebServer object on port 80
+AsyncWebServer server(80);
+
+// Create a WebSocket object
+AsyncWebSocket ws("/ws");
+
+// Json Variable to Hold Sensor Readings
+JSONVar readings;
 
 // Define the RX and TX pins for GPS
 #define RXD2 20
@@ -55,7 +65,7 @@ const uint8_t MPU = 0x68;
 unsigned long delay_cal = 3000;
 
 float rawaccX = 0, rawaccY = 0, rawaccZ = 0, rawgyroX = 0, rawgyroY = 0, rawgyroZ = 0;
-float tempC, gyroX, gyroY, gyroZ, accX, accY, accZ, calgyroX, calgyroY, calgyroZ, calaccX, calaccY, calaccZ;
+float gyroX, gyroY, gyroZ, accX, accY, accZ, calgyroX, calgyroY, calgyroZ, calaccX, calaccY, calaccZ;
 float lat, lon, speed, alt, sat;
 
 int Led_WIFI = 0;
@@ -368,6 +378,62 @@ void print_CV_Data(){
   Serial.println(power, 4);
 }
 
+String getSensorReadings(){
+  readings["latitude"] = String(lat);
+  readings["longitude"] =  String(lon);
+  readings["altitude"] = String(alt);
+  readings["speed"] = String(speed);
+  readings["Accelerometer(x)"] = String(accX);
+  readings["Accelerometer(y)"] = String(accY);
+  readings["Accelerometer(z)"] = String(accZ);
+  readings["Gyroscope(x)"] = String(gyroX);
+  readings["Gyroscope(y)"] = String(gyroY);
+  readings["Gyroscope(z)"] = String(gyroZ);
+  String jsonString = JSON.stringify(readings);
+  return jsonString;
+}
+
+void notifyClients(String sensorReadings) {
+  ws.textAll(sensorReadings);
+}
+
+void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
+  AwsFrameInfo *info = (AwsFrameInfo*)arg;
+  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+    //data[len] = 0;
+    //String message = (char*)data;
+    // Check if the message is "getReadings"
+    //if (strcmp((char*)data, "getReadings") == 0) {
+      //if it is, send current sensor readings
+      String sensorReadings = getSensorReadings();
+      Serial.print(sensorReadings);
+      notifyClients(sensorReadings);
+    //}
+  }
+}
+
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
+  switch (type) {
+    case WS_EVT_CONNECT:
+      Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      break;
+    case WS_EVT_DISCONNECT:
+      Serial.printf("WebSocket client #%u disconnected\n", client->id());
+      break;
+    case WS_EVT_DATA:
+      handleWebSocketMessage(arg, data, len);
+      break;
+    case WS_EVT_PONG:
+    case WS_EVT_ERROR:
+      break;
+  }
+}
+
+void initWebSocket() {
+  ws.onEvent(onEvent);
+  server.addHandler(&ws);
+}
+
 void setup() {
   Serial.begin(115200);
   
@@ -377,7 +443,17 @@ void setup() {
   Wire.begin(SDA_PIN, SCL_PIN);
   
   wifiInit();
-  ThingSpeak.begin(esp32Client);
+  initWebSocket();
+
+  // Web Server Root URL
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/index.html", "text/html");
+  });
+
+  server.serveStatic("/", LittleFS, "/");
+
+  // Start server
+  server.begin();
   
   gpsSerial.begin(GPS_BAUD, SERIAL_8N1, RXD2, TXD2);
 
@@ -405,6 +481,9 @@ void loop() {
   gpsInfo();
   accData(false, ACC_CONFIG_MODE);
   gyroData(false, GYRO_CONFIG_MODE);
-  send_JSON();
+  String sensorReadings = getSensorReadings();
+  Serial.print(sensorReadings);
+  notifyClients(sensorReadings);
+  ws.cleanupClients();
   delay(500);
 }
