@@ -12,8 +12,6 @@ const char* password = "Canada031106";     // Enter Wi-Fi password
 
 WiFiClient esp32Client;
 
-//WebSocketsClient webSocket;
-
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
