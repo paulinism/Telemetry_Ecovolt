@@ -2,7 +2,6 @@
 #include <WiFi.h>
 #include <TinyGPS++.h>
 #include <AsyncTCP.h>
-#include <WebSocketsClient.h>
 #include <Arduino_JSON.h>
 #include <ESPAsyncWebServer.h>
 
