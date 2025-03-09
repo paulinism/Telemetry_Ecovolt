@@ -3,34 +3,36 @@
 #include <WiFi.h>
 #include <WebSocketsClient.h>
 
-// WiFi
-const char* ssid = "moto_edge_50_pro_JD";  // Enter your Wi-Fi name
-const char* password = "Canada031106";     // Enter Wi-Fi password
+// Credenciales WiFi
+const char* ssid = "TU_SSID_WIFI";         // Reemplaza con el SSID de tu WiFi
+const char* password = "TU_PASSWORD_WIFI"; // Reemplaza con la contraseña de tu WiFi
 
 // WebSocket Server URL
-const char* websocket_server = lol //lo que sea el link
+const char* websocket_server = "ws://mi-servidor-websocket.com/ws"; // Reemplaza con la URL de tu servidor WebSocket
+
+WebSocketsClient webSocket; // Instancia del cliente WebSocket
 
 // WebSocket Event Handler
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     switch(type) {
         case WStype_CONNECTED:
-            Serial.println("Connected to WebSocket server!");
+            Serial.println("Conectado al servidor WebSocket!");
             break;
         case WStype_TEXT:
-            Serial.printf("Received message: %s\n", payload);
+            Serial.printf("Mensaje recibido: %s\n", payload);
             break;
         case WStype_DISCONNECTED:
-            Serial.println("Disconnected from WebSocket server!");
+            Serial.println("Desconectado del servidor WebSocket!");
             break;
     }
 }
 
-// Send Telemetry 
+// Send Telemetry
 void sendTelemetryData() {
     // Create JSON document
     StaticJsonDocument<200> jsonDoc;
-    jsonDoc["temperature"] = random(20, 40); // Example telemetry data
-    jsonDoc["voltage"] = random(300, 500) / 10.0; 
+    jsonDoc["temperature"] = random(20, 40); // Ejemplo de datos de telemetría
+    jsonDoc["voltage"] = random(300, 500) / 10.0;
     jsonDoc["status"] = "OK";
 
     // Convert JSON to string
@@ -39,20 +41,36 @@ void sendTelemetryData() {
 
     // Send via WebSocket
     webSocket.sendTXT(jsonString);
-    Serial.println("Sent: " + jsonString);
+    Serial.println("Enviado: " + jsonString);
+}
+
+void setupWiFi() {
+    Serial.println("Conectando a WiFi...");
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("");
+    Serial.println("WiFi Conectado!");
+    Serial.print("Dirección IP: ");
+    Serial.println(WiFi.localIP());
 }
 
 void setup() {
     Serial.begin(115200);
     setupWiFi();
-    
+
     // Setup WebSocket client
-    webSocket.begin(websocket_server, 80, "/");
+    webSocket.begin(websocket_server, 80, "/"); // Asegúrate del puerto correcto
     webSocket.onEvent(webSocketEvent);
 }
 
 void loop() {
-    webSocket.loop();  // Connection alive
+    webSocket.loop();  // Mantiene la conexión WebSocket viva
 
-    sendTelemetryData();  // Send telemetry 
-    delay(5000);  // Send every 5 seconds
+    sendTelemetryData();  // Envía telemetría
+    delay(5000);  // Envía cada 5 segundos
+}
