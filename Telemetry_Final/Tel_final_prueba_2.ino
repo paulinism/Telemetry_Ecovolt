@@ -386,7 +386,9 @@ void sendTelemetryData(){
   jsonDoc["Gyroscope(x)"] = String(gyroX);
   jsonDoc["Gyroscope(y)"] = String(gyroY);
   jsonDoc["Gyroscope(z)"] = String(gyroZ);
-  jsonDoc[
+  jsonDoc["Current"] = String(current);
+  jsonDoc["Voltage"] = String(voltage);
+  jsonDoc["Power"] = String(power);
 
   // Convert JSON to string
   String jsonString;
