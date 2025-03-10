@@ -3,7 +3,7 @@
 #include <WiFi.h>
 #include <TinyGPS++.h>
 #include <WebSocketsClient.h>
-#include <Arduino_JSON.h>
+#include <ArduinoJson.h>
 
 // WiFi
 const char* ssid = "moto_edge_50_pro_JD";  // Enter your Wi-Fi name
@@ -355,16 +355,16 @@ float fmap(float x, float in_min, float in_max, float out_min, float out_max){
 
 void get_CV_data(){
   sensorCRead = analogRead(sensorC_PIN) * (5.0 / 1023.0);
-  current = (sensorRead-2.5)/sensibility;
+  current = (sensorCRead-2.5)/sensibility;
   //irms = current*0.707;
   sensorVRead = analogRead(sensorV_PIN);
-  voltage = value = fmap(sensorValue, 0, 1023, 0.0, 10.0);
+  voltage = fmap(sensorVRead, 0, 1023, 0.0, 10.0);
   power = current*voltage; // P=IV watts
 }
 
-void print_CV_Data(){
+void print_CV_data(){
   Serial.print("Current (A): ");
-  Serial.println(current_value, 4);
+  Serial.println(current, 4);
   Serial.print("Irms (A): ");
   Serial.println(irms, 4);
   Serial.print("Power (W): ");
