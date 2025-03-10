@@ -16,9 +16,6 @@ const char* websocket_server = "ws://mi-servidor-websocket.com/ws"; // link
 
 WebSocketsClient webSocket;
 
-// Json Variable to Hold Sensor Readings
-JSONVar readings;
-
 // Define the RX and TX pins for GPS
 #define RXD2 20
 #define TXD2 21
@@ -70,7 +67,7 @@ int Led_DATA = 1;
 int sensorC_PIN = 2;
 int sensorV_PIN = 3;
 float sensibility = 0.066; //sensibility in V/A
-float current_value, irms, power, sensorRead;
+float current, voltage, irms, power, sensorCRead, sensorVRead;
 
 hw_timer_t *timer = NULL;
 
@@ -389,6 +386,7 @@ void sendTelemetryData(){
   jsonDoc["Gyroscope(x)"] = String(gyroX);
   jsonDoc["Gyroscope(y)"] = String(gyroY);
   jsonDoc["Gyroscope(z)"] = String(gyroZ);
+  jsonDoc[
 
   // Convert JSON to string
   String jsonString;
