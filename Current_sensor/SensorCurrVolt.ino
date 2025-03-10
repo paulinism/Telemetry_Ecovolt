@@ -3,7 +3,7 @@
 int sensorC_PIN = 0;
 int sensorV_PIN = 0;
 float sensibility = 0.066; //sensibility in V/A
-float current_value, irms, power;
+float current, voltage, irms, power, sensorCRead, sensorVRead;
 
 void setup() {
   Serial.begin(115200);
