@@ -72,7 +72,7 @@ int Led_DATA = 1;
 int sensorC_PIN = 2;
 int sensorV_PIN = 3;
 float sensibility = 0.066; //sensibility in V/A
-float current_value, irms, power, sensorRead;
+float current, voltage, irms, power, sensorCRead, sensorVRead;
 
 hw_timer_t *timer = NULL;
 
@@ -387,6 +387,9 @@ String getSensorReadings(){
   readings["Gyroscope(x)"] = String(gyroX);
   readings["Gyroscope(y)"] = String(gyroY);
   readings["Gyroscope(z)"] = String(gyroZ);
+  readings["Current"] = String(current);
+  readings["Voltage"] = String(voltage);
+  readings["Power"] = String(power);
   String jsonString = JSON.stringify(readings);
   return jsonString;
 }
