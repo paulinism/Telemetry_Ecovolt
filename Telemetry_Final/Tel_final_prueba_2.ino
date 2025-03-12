@@ -6,13 +6,13 @@
 #include <ArduinoJson.h>
 
 // WiFi
-const char* ssid = "moto_edge_50_pro_JD";  // Enter your Wi-Fi name
-const char* password = "Canada031106";     // Enter Wi-Fi password
+const char* ssid = "moto_edge_50_pro_JD";  // Enter your Wi-Fi name (cel de diego)
+const char* password = "Canada031106";     // Enter Wi-Fi password 
 
 WiFiClient esp32Client;
 
 // WebSocket Server URL
-const char* websocket_server = "ws://mi-servidor-websocket.com/ws"; // link
+const char* websocket_server = "wss://api.ecovolt.lemi-tec.mx?connectItemType=ESP32&username=Antonio "; // link
 
 WebSocketsClient webSocket;
 
